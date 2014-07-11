@@ -19,6 +19,7 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
 
@@ -40,6 +41,19 @@ abstract public class WakefulIntentService extends IntentService {
     }
 
     return(lockStatic);
+  }
+
+  public static void unbindWakefulWork(Context ctxt, ServiceConnection connection) {
+    ctxt.unbindService(connection);
+  }
+
+  public static void bindWakefulWork(Context ctxt, Intent i, ServiceConnection connection) {
+    getLock(ctxt.getApplicationContext()).acquire();
+    ctxt.bindService(i, connection, Context.BIND_AUTO_CREATE);
+  }
+
+  public static void bindWakefulWork(Context ctxt, Class<?> clsService, ServiceConnection connection) {
+    bindWakefulWork(ctxt, new Intent(ctxt, clsService), connection);
   }
 
   public static void sendWakefulWork(Context ctxt, Intent i) {
