@@ -48,7 +48,11 @@ abstract public class WakefulIntentService extends IntentService {
   }
 
   public static void bindWakefulWork(Context ctxt, Intent i, ServiceConnection connection) {
-    getLock(ctxt.getApplicationContext()).acquire();
+    // Well, we need to call startService, or the service will be destroyed when all the
+    // bound client unbind. However, in this case, this is not really a bound service.
+    // Ref: http://mylifewithandroid.blogspot.tw/2008/02/double-life-of-service.html
+    sendWakefulWork(ctxt, i);
+
     ctxt.bindService(i, connection, Context.BIND_AUTO_CREATE);
   }
 
